@@ -69,7 +69,7 @@ Git通过仓库(repository)来管理版本，简称repo，而仓库又分为远�
 
 ## 使用 SSH 密钥密码短语
 
-在上一步设置了ssh密钥密码短语可以有效的保护电脑安全，但这也意味着每次使用ssh密钥时都需要输入一遍，如在git push/pull时，比较麻烦。但除了麻烦还会有其他问题，在git bash中这肯定没问题，但在某些插件中，在vscode中还好，在obsidian的git插件中，并未提供输入密码的选项，会直接导致同步失败。
+在上一步设置了ssh密钥密码短语可以有效的保护电脑安全，但这也意味着每次使用ssh密钥时都需要输入一遍，如在git push/pull时，比较麻烦。但除了麻烦还会有其他问题，在git bash中这肯定没问题，但在某些插件中，在vscode中还好，在obsidian的git插件中，并未提供输入密码的选项，会直接导致同步失败。这里推荐在win中使用第三种方法，可以兼容git bash、powershell、vscode和obsidian，第二种方法实测只在git bash中有用。
 
 1. 添加或更改密码短语
 
@@ -136,7 +136,8 @@ unset env
 
 3. `ssh-agent`在 Windows 的openSSH上自动启动
 
-注意vscode、obsidian和powershell默认使用 Windows OpenSSH，而非 Git Bash 里的 ssh-agent，所以必须把你的密钥加到 Windows ssh-agent 中。而且这种方法和第二种方法是冲突的，这意味着这样更改后，git bash中仍需要重复输入密码。
+注意vscode、obsidian和powershell默认使用 Windows OpenSSH，而非 Git Bash 里的 ssh-agent，所以必须把你的密钥加到 Windows ssh-agent 中。
+而且这种方法和第二种方法是冲突的，==这意味着需要把第二步修改的`~/.profile`删除==，不然可能会导致git bash里需要重复输入密码。
 
 在 **PowerShell（管理员）** 中执行
 ```shell
