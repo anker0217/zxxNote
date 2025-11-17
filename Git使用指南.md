@@ -2,6 +2,7 @@
 date: 2025-11-17
 tags:
   - Git
+  - SSH
 ---
 Git通过仓库(repository)来管理版本，简称repo，而仓库又分为远程repo和本地repo。远程repo通常建立在github、gitee等网站上，而本地repo通过git init命令在本地创建。
 远程repo在创建时，以github为例，不要选择自动创建readme.md，不然之后把本地仓库push上去时，会因为远端分支和本地分支不一致发生冲突，要使用push -f
@@ -84,10 +85,11 @@ $ ssh-keygen -p -f ~/.ssh/id_ed25519
 ```
 
 如果您的密钥已经设置了密码，则在更改为新密码之前，系统会提示您输入旧密码。
+一种可行的方法是直接把密码删掉，这样会省去很多不必要的麻烦。
 
-2. `ssh-agent`在 Windows 版 Git 上自动启动
+2. `ssh-agent`在 Windows 版 Git Bash上自动启动
 
-可以`ssh-agent`设置在打开 bash 或 Git shell 时自动运行。复制以下几行代码并粘贴到`~/.profile`或 Git shell 的`~/.bashrc`中：
+可以`ssh-agent`设置在打开 bash 或 Git shell 时自动运行。但注意，此法仅限于git bash中，而vscode、obsidian和powershell中使用的是windows自带的ssh，所以对他们无效。复制以下几行代码并粘贴到`~/.profile`或 Git shell 的`~/.bashrc`中：
 
 ```bash
 env=~/.ssh/agent.env
@@ -117,7 +119,7 @@ unset env
 
 如果想`ssh-agent`在一段时间后忘记密钥，可以修改命令为`ssh-add -t <seconds>`。
 
-3. 现在，当你第一次运行 Git Bash 时，系统会提示你输入密码：
+现在，当你第一次运行 Git Bash 时，系统会提示你输入密码：
 
 ```shell
 > Initializing new SSH agent...
@@ -131,6 +133,39 @@ unset env
 ```
 
 该`ssh-agent`进程将持续运行，直到您注销、关闭计算机或终止该进程为止。
+
+3. `ssh-agent`在 Windows 的openSSH上自动启动
+
+注意vscode、obsidian和powershell默认使用 Windows OpenSSH，而非 Git Bash 里的 ssh-agent，所以必须把你的密钥加到 Windows ssh-agent 中。而且这种方法和第二种方法是冲突的，这意味着这样更改后，git bash中仍需要重复输入密码。
+
+在 **PowerShell（管理员）** 中执行
+```shell
+Get-Service ssh-agent | Set-Service -StartupType Automatic 
+Start-Service ssh-agent
+```
+（你必须以管理员身份运行，否则会报错）
+```shell
+ssh-add ~/.ssh/id_rsa
+```
+如果你的密钥名字不是 id_rsa（比如 id_ed25519），改成
+```shell
+ssh-add ~/.ssh/id_ed25519
+```
+系统会提示你输入一次密钥密码短语，这一步之后就不会再提示了
+```shell
+ssh-add -l
+```
+看到类似
+```shell
+> 2048 SHA256:xxxx... user@pc (RSA)
+```
+就说明成功了
+
+设置 Git 使用系统 OpenSSH，或者直接在“C:/USERS/YOU/.gitconfig”中修改
+```shell
+git config --global core.sshCommand "C:/Windows/System32/OpenSSH/ssh.exe"
+```
+
 
 ## 将SSH公钥添加到github中
 
